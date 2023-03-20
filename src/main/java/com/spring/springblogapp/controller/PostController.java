@@ -4,13 +4,14 @@ import com.spring.springblogapp.payload.PostDto;
 import com.spring.springblogapp.payload.PostResponse;
 import com.spring.springblogapp.service.PostService;
 import com.spring.springblogapp.utils.AppConstants;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api")
+@RequestMapping("/api/posts")
 @RestController
 public class PostController {
 
@@ -20,12 +21,12 @@ public class PostController {
         this.postService = postService;
     }
 
-    @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
+    @PostMapping("/create")
+    public ResponseEntity<PostDto> createPost( @Valid @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
     //GET ALL POSTS
-    @GetMapping("/posts")
+    @GetMapping("/getAll")
     public PostResponse getAllPosts(@RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
                                     @RequestParam(value = "paqeSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
                                     @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
@@ -33,12 +34,12 @@ public class PostController {
                                      ){
           return postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
     }
-
+    @GetMapping("/get/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") long id) {
         return ResponseEntity.ok(postService.getPostById(id));
 }
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto,@PathVariable(name = "id") long id){
+    public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto,@PathVariable(name = "id") long id){
         PostDto postResponse = postService.updatePost(postDto, id);
 
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
